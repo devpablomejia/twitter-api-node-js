@@ -1,6 +1,9 @@
 const express = require('express');
 const tweetsService = require("../services/tweetsService");
 
+const validate = require("../utils/validate");
+const { createTweetSchema } = require("../utils/schemas/tweetsSchemas");
+
 const router = express.Router();
 
 router.get("/", getTweets);
@@ -22,7 +25,14 @@ async function getTweets(req, res, next) {
 
 async function createTweet(req, res, next) {
     try {
-        const tweet = await tweetsService.createTweet(req.body);
+        const tweetData = req.body;
+        const validationError = validate(createTweetSchema, tweetData);
+        if (validationError) {
+            return res
+            .status(400)
+            .json({ message: validationError.details[0].message });
+        }
+        const tweet = await tweetsService.createTweet(tweetData);
         res.status(201).json(tweet);
     } catch (error) {
         next(error);
