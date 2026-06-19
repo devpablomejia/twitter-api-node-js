@@ -13,7 +13,6 @@ module.exports = router;
 
 async function getTweets(req, res, next) {
     try {
-        throw new Error("Error getting tweets");
         const tweets = await tweetsService.getTweets();
         res.status(200).json(tweets);
     } catch (error) {
