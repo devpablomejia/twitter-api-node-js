@@ -1,4 +1,5 @@
 const config = require('../../config/index');
+const boom = require('@hapi/boom');
 
 function withErrorStack(error, stack) {
     if (config.dev) {
@@ -13,17 +14,10 @@ function logErrors(err, req, res, next) {
 }
 
 function wrapErrors(err, req, res, next) {
-    const badImplementedError = {
-        stack: err.stack,
-        output: {
-            statusCode: 500,
-            payload: {
-                error: 'Internal Server Error',
-                message: err.message,
-            },
-        },
-    };
-    next(badImplementedError);
+    if (!err.isBoom) {
+        next(boom.badImplementation(err));
+    }
+    next(err);
 }
 
 function errorHandler(err, req, res, next) {

@@ -1,5 +1,5 @@
 const validate = require("../validate");
-
+const boom = require('@hapi/boom');
 
 // @Param {Object} validationSchema - {[K in body | "query" | "params"]: JoiSchema}
 function createValidationMiddleware(validationSchema) {
@@ -19,7 +19,7 @@ function createValidationMiddleware(validationSchema) {
 
     return function validationMiddleware(req, res, next) {
         const error = validate(joiSchema, req[payloadKey]);
-        error ? next(error) : next();
+        error ? next(boom.badRequest(error)) : next();
     }
 }
 
